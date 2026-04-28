@@ -685,6 +685,82 @@
     border-radius: var(--radius-sm);
   }
 
+  /* ── LEVEL PICKER ── */
+  .level-picker {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 560px;
+    padding: 14px 24px 0;
+    display: flex;
+    gap: 6px;
+  }
+
+  .lv-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 9px 6px;
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: all 0.2s var(--spring);
+    -webkit-tap-highlight-color: transparent;
+    backdrop-filter: blur(8px);
+  }
+
+  .lv-btn .lv-label { font-size: 13px; font-weight: 800; }
+  .lv-btn .lv-sub   { font-size: 9px; font-weight: 500; letter-spacing: 0.3px; color: var(--text-dim); transition: color 0.2s; }
+
+  .lv-btn:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-hover);
+    color: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+
+  .lv-btn:active { transform: scale(0.95) translateY(0); box-shadow: none; }
+
+  .lv-btn.active {
+    background: linear-gradient(135deg, rgba(124,106,247,0.18), rgba(124,106,247,0.06));
+    border-color: rgba(124,106,247,0.55);
+    color: #a89ff8;
+    box-shadow: 0 0 18px rgba(124,106,247,0.18), inset 0 1px 0 rgba(255,255,255,0.06);
+  }
+
+  .lv-btn.active .lv-sub { color: rgba(168,159,248,0.6); }
+
+  .lv-btn.done-level {
+    border-color: rgba(0,229,160,0.35);
+    color: rgba(0,229,160,0.8);
+  }
+
+  .lv-btn.done-level .lv-sub { color: rgba(0,229,160,0.45); }
+
+  @media (max-width: 480px) {
+    .level-picker { padding: 12px 16px 0; gap: 5px; }
+    .lv-btn { padding: 8px 4px; font-size: 11px; }
+    .lv-btn .lv-label { font-size: 12px; }
+    .lv-btn .lv-sub { font-size: 8px; }
+  }
+
+  @media (max-width: 375px) {
+    .level-picker { padding: 8px 12px 0; gap: 4px; }
+    .lv-btn { padding: 7px 3px; }
+    .lv-btn .lv-label { font-size: 11px; }
+    .lv-btn .lv-sub { display: none; }
+  }
+
   /* ── FOOTER ── */
   .made-with {
     position: relative;
@@ -899,6 +975,26 @@
   <div class="progress-label" id="progress-label">Level 1 of 4 · 3-letter word</div>
 </div>
 
+<!-- Level Picker -->
+<div class="level-picker">
+  <button class="lv-btn active" id="lv-1" onclick="jumpToLevel(1)">
+    <span class="lv-label">L1</span>
+    <span class="lv-sub">3 letters</span>
+  </button>
+  <button class="lv-btn" id="lv-2" onclick="jumpToLevel(2)">
+    <span class="lv-label">L2</span>
+    <span class="lv-sub">4 letters</span>
+  </button>
+  <button class="lv-btn" id="lv-3" onclick="jumpToLevel(3)">
+    <span class="lv-label">L3</span>
+    <span class="lv-sub">5 letters</span>
+  </button>
+  <button class="lv-btn" id="lv-4" onclick="jumpToLevel(4)">
+    <span class="lv-label">L4</span>
+    <span class="lv-sub">6 letters</span>
+  </button>
+</div>
+
 <!-- Board -->
 <div id="board-wrapper">
   <div id="board"></div>
@@ -927,21 +1023,29 @@ const WORDS = {
   3: ['CAT','DOG','RUN','SUN','MAP','JAM','FIG','OAK','FLY','SPY','GEM','HOP','ICE','JOY','KIT',
       'LAP','MUD','NET','OWL','PIG','RAY','SKY','TAP','VAN','WAX','YAM','ZIP','ARC','BAY','CUB',
       'DEN','ELM','FAN','GUN','HAM','INK','JAR','KEG','LEG','MOB','NIT','ODD','PAD','RIG','SAP',
-      'TAN','URN','VET','WIG','YAK','ZAP','ACE','BED','COP','DIP','EGG','FOG','GAP','HEX','IVY'],
+      'TAN','URN','VET','WIG','YAK','ZAP','ACE','BED','COP','DIP','EGG','FOG','GAP','HEX','IVY',
+      'BOW','COB','DIM','EVE','FEW','GOB','HUB','JET','LAD','MEW','NOB','ORB','PEW','ROD','SOB',
+      'TUB','VIM','WEB','YEW','ZIT'],
   4: ['BIRD','FIRE','GOLD','HERO','IRON','JUMP','KING','LAMP','MOON','NAIL','OPEN','PARK','QUIZ',
       'ROCK','SALT','TREE','VIBE','WAVE','YARN','ZERO','APEX','BLOT','CLUB','DOME','EARN','FLAP',
       'GRIP','HAZE','IDLE','JOLT','KNOB','LURE','MILD','NORM','OVEN','PLUM','RAFT','SILK','TUSK',
-      'URGE','VEIL','WINK','XRAY','YELL','ZOOM','ARCH','BOLD','CAPE','DUSK','ECHO','FERN','GLOW'],
+      'URGE','VEIL','WINK','XRAY','YELL','ZOOM','ARCH','BOLD','CAPE','DUSK','ECHO','FERN','GLOW',
+      'ATOM','BUFF','CURB','DASH','EPIC','FLUX','GUST','HULL','INCA','JADE','KELP','LOFT','MESH',
+      'NEWT','OATH','PAVE','RUSE','SNAG','TUFT','WICK'],
   5: ['BRAVE','CHASE','DREAM','FLAME','GRACE','HEART','IDEAL','JEWEL','KARMA','LIGHT','MAGIC',
       'NIGHT','OCEAN','PEACE','QUEST','RIVER','SHINE','TIGER','ULTRA','VIVID','WHIRL','XENON',
       'YIELD','ZONAL','ADAPT','BLEND','CRAFT','DEPTH','ELITE','FROST','GRAFT','HINGE','INSET',
       'JOUST','KITES','LUNAR','MOTIF','NYMPH','ORBIT','PLANT','QUILL','REALM','SCOUT','TOXIC',
-      'USHER','VAULT','WOVEN','PROXY','BLAZE','CRISP','DWARF','EXPEL','FLAIR','GRIND','HOIST'],
+      'USHER','VAULT','WOVEN','PROXY','BLAZE','CRISP','DWARF','EXPEL','FLAIR','GRIND','HOIST',
+      'ALGAE','BRISK','CHURN','DERBY','EMBER','FLOSS','GLOOM','HARSH','INBOX','JAUNT','KNEEL',
+      'LAPEL','MURKY','NOTCH','OZONE','PERCH','RISKY','SCALP','TROVE','UDDER'],
   6: ['BRIDGE','CASTLE','DANCER','EMPIRE','FABLED','GARDEN','HUNTER','ISLAND','JESTER','KINDLE',
       'LANCER','MANGLE','NOBLES','ORACLE','PLANET','QUIVER','RACING','SILVER','THRONE','URCHIN',
       'VELVET','WONDER','YELLOW','ZIPPER','ARMOUR','BOUNCE','CANDLE','DRIVEN','FLIGHT','GLITCH',
       'HAMMER','IGNITE','JUNGLE','KNIGHT','LUMBER','MYSTIC','NIMBLE','OYSTER','PONDER','RADIAL',
-      'STARVE','TURNIP','UNFOLD','VANISH','WALNUT','EXOTIC','FROZEN','GRAVEL','HAZARD','INTACT']
+      'STARVE','TURNIP','UNFOLD','VANISH','WALNUT','EXOTIC','FROZEN','GRAVEL','HAZARD','INTACT',
+      'ABLAZE','BLAZER','COBALT','DOUBLE','EMBARK','FLUENT','GOBLIN','HOLLER','INVOKE','JOYFUL',
+      'KELVIN','LAVISH','MELLOW','NOODLE','OUTLAW','PILLAR','ROBUST','SLEEVE','TANGLE','UNVEIL']
 };
 
 const VALID_CHARS = /^[A-Za-z]$/;
@@ -999,6 +1103,11 @@ function renderProgress() {
     el.className = 'step';
     if (i < state.level) el.classList.add('done');
     else if (i === state.level) el.classList.add('active');
+
+    const btn = document.getElementById(`lv-${i}`);
+    btn.className = 'lv-btn';
+    if (i === state.level) btn.classList.add('active');
+    else if (i < state.level) btn.classList.add('done-level');
   });
 }
 
@@ -1310,6 +1419,15 @@ function launchConfetti() {
 }
 
 // ── NAVIGATION ──
+function jumpToLevel(n) {
+  if (n === state.level) return;
+  document.getElementById('win-overlay').classList.remove('show');
+  document.getElementById('lose-overlay').classList.remove('show');
+  state.level = n;
+  state.won = false;
+  transitionBoard();
+}
+
 function nextLevel() {
   document.getElementById('win-overlay').classList.remove('show');
   document.getElementById('lose-overlay').classList.remove('show');
